@@ -39,6 +39,30 @@ class ProductCreateView(generics.CreateAPIView):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
+class ProductView(generics.ListCreateAPIView):
+    serializer_class = ProductSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        # Get all products for current user
+        return Product.objects.filter(user=self.request.user)
+
+    def get(self, request, *args, **kwargs):
+        # Check if product_id is in URL parameters
+        product_id = self.kwargs.get('id')
+        if product_id:
+            try:
+                product = Product.objects.get(id=product_id, user=request.user)
+                serializer = self.get_serializer(product)
+                return Response(serializer.data)
+            except Product.DoesNotExist:
+                return Response(
+                    {'error': 'Product not found or not owned by user'},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+        # Return all products if no ID specified
+        return super().get(request, *args, **kwargs)
+
 class SaleCreateView(generics.CreateAPIView):
     serializer_class = SaleSerializer
     permission_classes = [IsAuthenticated]
