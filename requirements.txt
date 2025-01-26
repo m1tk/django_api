@@ -3,3 +3,5 @@ djangorestframework
 psycopg2-binary
 djangorestframework-simplejwt
 python-decouple
+reportlab
+django-filter
