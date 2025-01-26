@@ -6,7 +6,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from .models import Product
-from .serializers import ProductSerializer
+from .serializers import ProductSerializer, SaleSerializer
 
 class SignupView(generics.CreateAPIView):
     serializer_class = UserSerializer
@@ -38,3 +38,19 @@ class ProductCreateView(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+class SaleCreateView(generics.CreateAPIView):
+    serializer_class = SaleSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        product = serializer.validated_data['product']
+        
+        # Update product available quantity
+        product.quantity -= serializer.validated_data['quantity']
+        product.save()
+        
+        # Add new sale record
+        serializer.save(
+            unit_price=product.unit_price
+        )
