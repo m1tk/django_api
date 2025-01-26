@@ -4,6 +4,9 @@ from .serializers import UserSerializer
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
+from .models import Product
+from .serializers import ProductSerializer
 
 class SignupView(generics.CreateAPIView):
     serializer_class = UserSerializer
@@ -27,3 +30,11 @@ class LoginView(APIView):
             'refresh': str(refresh),
             'user': UserSerializer(user).data
         })
+
+class ProductCreateView(generics.CreateAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
