@@ -92,9 +92,9 @@ class SaleCreateView(generics.CreateAPIView):
 class SalesReportView(generics.CreateAPIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self, request):
-        month = request.GET.get('month')
-        year = request.GET.get('year')
+    def get(self, request, *args, **kwargs):
+        month = self.kwargs.get('month')
+        year = self.kwargs.get('year')
         if not month or not year:
             return Response(
                 {'error': 'Month and year parameters are required'},

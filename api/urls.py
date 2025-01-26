@@ -10,5 +10,5 @@ urlpatterns = [
     path('product/status/<int:id>', ProductView.as_view(), name='product-status'),
     path('sale/create', SaleCreateView.as_view(), name='sale-create'),
 
-    path('report', SalesReportView.as_view(), name='sales-report'),
+    path('report/<int:month>/<int:year>', SalesReportView.as_view(), name='sales-report'),
 ]
